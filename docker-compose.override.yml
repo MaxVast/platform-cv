@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:13-alpine
+    init: true
+    environment:
+      - POSTGRES_DB=platform_cv
+      - POSTGRES_USER=platform_cv
+      - POSTGRES_PASSWORD=platform_cv
+    volumes:
+      - db_data:/var/lib/postgresql/data:rw
+      - ./docker/data:/tmp/data
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+
+volumes:
+  db_data:
