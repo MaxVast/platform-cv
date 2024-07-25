@@ -37,10 +37,10 @@ OR
 `cargo install diesel_cli`
 
 - #### Last Step : Execute migrations
-- Enter into project directory
-- Run : `diesel migration run`
-- Database schemas are created
-- Enjoy! 😄
+  - Enter into project directory
+  - Run : `diesel migration run`
+  - Database schemas are created
+  - Enjoy! 😄
 
 ### Test
 No test yet
