@@ -56,7 +56,7 @@ async fn main() -> io::Result<()> {
     HttpServer::new(move || {
 
         // Split the string by '|' delimiter
-        let allowed_origins: Vec<&str> = (&cors_allow_origin).split('|').collect();
+        let allowed_origins: Vec<&str> = (cors_allow_origin).split('|').collect();
         let mut cors = Cors::default()
             .send_wildcard()
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
