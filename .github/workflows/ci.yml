@@ -24,5 +24,5 @@ jobs:
       - name: Save Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: platform-cv
-          path: target/release/
+          name: app-rust-platform-cv
+          path: target/release/platform-cv
