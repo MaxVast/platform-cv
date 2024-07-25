@@ -17,12 +17,14 @@ jobs:
         run: |
           cargo fmt 
           cargo clippy --all-targets --all-features -- -D warnings
-      - name: Build
-        run: cargo build --all-targets
+      - name: Build release version
+        run: cargo build --release
       #- name: Run tests
       #  run: cargo test --all
+      - name: List files in target/release
+        run: ls -al target/release
       - name: Save Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: app-rust-platform-cv
-          path: /home/runner/work/platform-cv/platform-cv/target/release/platform-cv
+          path: target/release/platform-cv
