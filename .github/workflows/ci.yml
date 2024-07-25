@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app-rust-platform-cv
-          path: target/release/platform-cv
+          path: /home/runner/work/platform-cv/platform-cv/target/release/platform-cv
