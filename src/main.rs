@@ -76,6 +76,7 @@ async fn main() -> io::Result<()> {
             ))
     })
     .bind(&app_url)?
+    .workers(2)
     .run()
     .await
 }

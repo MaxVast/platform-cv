@@ -1,6 +1,8 @@
 -- Your SQL goes here
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY NOT NULL,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     password VARCHAR NOT NULL
@@ -8,7 +10,7 @@ CREATE TABLE users (
 
 CREATE TABLE login_history
 (
-    id SERIAL PRIMARY KEY NOT NULL,
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id),
     login_timestamp TIMESTAMP WITH TIME ZONE NOT NULL
 );
