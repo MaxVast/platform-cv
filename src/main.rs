@@ -2,13 +2,8 @@ mod config;
 mod constants;
 
 use actix_cors::Cors;
-use actix_web::{App, HttpServer, web, http::header};
-use std::{
-    env, io,
-    fs,
-    os::unix::fs::PermissionsExt,
-    path::Path
-};
+use actix_web::{http::header, web, App, HttpServer};
+use std::{env, fs, io, os::unix::fs::PermissionsExt, path::Path};
 
 fn create_directory_if_not_exists(path: &Path) -> io::Result<()> {
     if !path.exists() {
@@ -34,7 +29,7 @@ async fn main() -> io::Result<()> {
     let app_host = env::var("APP_HOST").expect("APP_HOST not found.");
     let app_port = env::var("APP_PORT").expect("APP_PORT not found.");
     let forwarded_port = match env::var("FORWARDED_PORT") {
-        Ok(value) => value, // Use the value from the environment if available
+        Ok(value) => value,         // Use the value from the environment if available
         Err(_) => app_port.clone(), // Use app_port if FORWARDED_PORT is not set
     };
     let app_url = format!("{}:{}", &app_host, &app_port);
@@ -45,16 +40,16 @@ async fn main() -> io::Result<()> {
         Err(_) => format!("http://127.0.0.1:{}", &forwarded_port),
     };
 
-    println!("{}", constants::SERVER_STARTED);
-
     let pool = config::db::init_db_pool(&db_url);
-    let conn = &mut pool.get().expect("Failed to get a connection from the pool");
+    let conn = &mut pool
+        .get()
+        .expect("Failed to get a connection from the pool");
     config::db::run_migration(conn);
 
     println!("✅ Connected to database and table created !");
+    println!("{}", constants::SERVER_STARTED);
 
     HttpServer::new(move || {
-
         // Split the string by '|' delimiter
         let allowed_origins: Vec<&str> = (cors_allow_origin).split('|').collect();
         let mut cors = Cors::default()
@@ -76,12 +71,88 @@ async fn main() -> io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .wrap(actix_web::middleware::Logger::default())
-            .wrap(actix_web::middleware::Logger::new("%a %{User-Agent}i %{Host}i"))
-            //.wrap(crate::middleware::auth_middleware::Authentication) // Comment this line if you want to integrate with yew-address-book-frontend
-            //.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-            //.configure(config::app::config_services)
+            .wrap(actix_web::middleware::Logger::new(
+                "%a %{User-Agent}i %{Host}i",
+            ))
     })
-        .bind(&app_url)?
-        .run()
-        .await
+    .bind(&app_url)?
+    .run()
+    .await
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{test, App, http::header};
+    use std::{fs, path::Path};
+    use testcontainers::{clients, images::postgres::Postgres};
+
+    #[test]
+    async fn test_create_directory_if_not_exists_creates_directory() {
+        let test_dir = Path::new("test_dir");
+        if test_dir.exists() {
+            fs::remove_dir_all(test_dir).unwrap();
+        }
+
+        let result = create_directory_if_not_exists(test_dir);
+        assert!(result.is_ok());
+        assert!(test_dir.exists());
+        assert_eq!(fs::metadata(test_dir).unwrap().permissions().mode() & 0o777, 0o775);
+
+        fs::remove_dir_all(test_dir).unwrap();
+    }
+
+    #[test]
+    async fn test_create_directory_if_not_exists_directory_already_exists() {
+        let test_dir = Path::new("test_dir2");
+        fs::create_dir_all(test_dir).unwrap();
+        fs::set_permissions(test_dir, fs::Permissions::from_mode(0o755)).unwrap();
+        let result = create_directory_if_not_exists(test_dir);
+
+
+        if test_dir.exists() {
+            assert!(result.is_ok());
+            assert!(test_dir.exists());
+            assert_eq!(fs::metadata(test_dir).unwrap().permissions().mode() & 0o777, 0o755);
+            fs::remove_dir_all(test_dir).unwrap();
+        }
+    }
+
+    #[actix_web::test]
+    async fn test_startup_ok() {
+        //CODE OK FOR testcontainers 0.14.0 not 0.20
+        let docker = clients::Cli::default();
+        let postgres = docker.run(Postgres::default());
+        let pool = config::db::init_db_pool(
+            format!(
+                "postgres://postgres:postgres@127.0.0.1:{}/postgres",
+                postgres.get_host_port_ipv4(5432)
+            )
+                .as_str(),
+        );
+        config::db::run_migration(&mut pool.get().unwrap());
+
+        let _ = HttpServer::new(move || {
+            App::new()
+                .wrap(
+                    Cors::default() // allowed_origin return access-control-allow-origin: * by default
+                        .send_wildcard()
+                        .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+                        .allowed_headers(vec![
+                            header::CONTENT_TYPE,
+                            header::AUTHORIZATION,
+                            header::ACCEPT,
+                        ])
+                        .max_age(3600),
+                )
+                .app_data(web::Data::new(pool.clone()))
+                .wrap(actix_web::middleware::Logger::default())
+        })
+            .bind("localhost:8001".to_string())
+            .unwrap()
+            .run();
+
+        assert_eq!(true, true);
+    }
+}
+

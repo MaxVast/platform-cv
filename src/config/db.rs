@@ -23,5 +23,6 @@ pub fn init_db_pool(url: &str) -> Pool {
 }
 
 pub fn run_migration(conn: &mut PgConnection) {
-    conn.run_pending_migrations(MIGRATIONS).expect("Failed to run migrations");
+    conn.run_pending_migrations(MIGRATIONS)
+        .expect("Failed to run migrations");
 }
