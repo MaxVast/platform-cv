@@ -87,8 +87,7 @@ async fn main() -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http::{header, StatusCode}, test, App};
-    use std::{fs, path::Path};
+    use actix_web::{http::{header, StatusCode}, body::to_bytes, test, App, web::{Bytes}};
     use testcontainers::{clients, images::postgres::Postgres};
 
     #[test]
@@ -158,6 +157,17 @@ mod tests {
         assert_eq!(true, true);
     }
 
+    trait BodyTest {
+        fn as_str(&self) -> &str;
+    }
+
+    impl BodyTest for Bytes {
+        fn as_str(&self) -> &str {
+            std::str::from_utf8(self).unwrap()
+        }
+    }
+
+
     #[actix_web::test]
     async fn test_startup_health_check_ok() {
         //CODE OK FOR testcontainers 0.14.0 not 0.20
@@ -197,5 +207,8 @@ mod tests {
             .await;
 
         assert_eq!(resp.status(), StatusCode::OK);
+
+        let body = to_bytes(&mut resp.into_body()).await.unwrap();
+        assert_eq!(body.as_str(), "Health check OK");
     }
 }
