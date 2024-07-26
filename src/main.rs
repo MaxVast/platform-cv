@@ -96,6 +96,7 @@ mod tests {
 
         let result = create_directory_if_not_exists(test_dir);
         assert!(result.is_ok());
+        assert!(result.is_ok());
         assert!(test_dir.exists());
         assert_eq!(fs::metadata(test_dir).unwrap().permissions().mode() & 0o777, 0o775);
 
@@ -150,7 +151,7 @@ mod tests {
         })
             .bind("localhost:8001".to_string())
             .unwrap()
-            .run();
+            .run().await;
 
         assert_eq!(true, true);
     }
