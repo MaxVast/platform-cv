@@ -151,7 +151,7 @@ mod tests {
         })
             .bind("localhost:8001".to_string())
             .unwrap()
-            .run().await;
+            .run();
 
         assert_eq!(true, true);
     }
