@@ -20,7 +20,7 @@ Or using [Docker](https://www.docker.com/)
 If you want to use docker for the database, follow these steps : 
 
 - Enter into project directory
-- Run `docker-compose -f docker-compose.local.yml up` for local environment
+- Run `docker-compose up -d` for local environment
   or `docker-compose -f docker-compose.prod.yml up` for production environment
 - The database is mounted and accessible
 - Enjoy! 😄
@@ -36,14 +36,23 @@ OR
 - #### Cargo
 `cargo install diesel_cli`
 
-- #### Last Step : Execute migrations
+- #### Execute migrations
   - Enter into project directory
   - Run : `diesel migration run`
   - Database schemas are created
   - Enjoy! 😄
 
-### Test
-No test yet
+OR
+- #### Execute migrations with cargo run
+In main.rs l.47 : `config::db::run_migration(conn);`
+- Run : `cargo run`
+- `✅ Connected to database and table created !`
+- Enjoy! 😄
 
+### Test
+- Enter into project directory
+- Run : `cargo test -- --nocapture`
+- Enjoy! 😄
+- 
 ### Support and Contributions
-If you find this project useful and would like to support its development, consider making a contribution or sending a tip to <br/>0xe79B2cc4c07dB560f8e1eE63ed407DD2DCFdE80e
+If you find this project useful and would like to support its development, consider making a contribution or sending a tip to 0xe79B2cc4c07dB560f8e1eE63ed407DD2DCFdE80e
