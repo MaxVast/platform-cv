@@ -40,11 +40,14 @@ jobs:
       - name: Run tests
         run: cargo test -- --nocapture
 
+      - name: Docker build images
+        run: docker-compose build
+
       - name: Run App
         run: |
           docker-compose up -d
           docker-compose ps
-          target/release/platform-cv
+          target/release/platform-cv > /dev/null
 
       - name: Wait for service
         run: |
@@ -55,7 +58,6 @@ jobs:
               running) exit 0;;
               unhealthy)
                 docker-compose ps
-                docker-compose logs php-fpm
                 exit 1
               ;;
             esac
