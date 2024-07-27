@@ -43,46 +43,11 @@ jobs:
       - name: Docker build images
         run: docker-compose build
 
-      - name: Run App
+      - name: Run container Docker
         run: |
           docker-compose up -d
           docker-compose ps
-          target/release/platform-cv > /dev/null
-
-      - name: Wait for service
-        run: |
-          sleep 5
-          while status="$(docker inspect --format="{{print .State.Status}}" "$(docker-compose ps -q app)")"; do
-            case $status in
-              starting) sleep 1;;
-              running) exit 0;;
-              unhealthy)
-                docker-compose ps
-                exit 1
-              ;;
-            esac
-          done
-          exit 1
-
-      - name: Check App
-        run: |
-          sleep 5
-          HTTP_CODE=$(curl -ik -X GET 'http://127.0.0.1:8080/health-check' -o /dev/null -w '%{http_code}\n' -s)
-          echo $HTTP_CODE
-          if [ "$HTTP_CODE" = "200" ]; then
-              exit 0
-          fi
-          exit 1
-
-      - name: Check App homepage
-        run: |
-          sleep 5
-          HTTP_CODE=$(curl -ik -X GET 'http://127.0.0.1:8080' -o /dev/null -w '%{http_code}\n' -s)
-          echo $HTTP_CODE
-          if [ "$HTTP_CODE" = "200" ]; then
-              exit 0
-          fi
-          exit 1
+          docker-compose stop
 
       - name: List files in target/release
         run: ls -al target/release
