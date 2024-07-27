@@ -34,6 +34,26 @@ jobs:
         run: cargo build --release
       - name: Run tests
         run: cargo test -- --nocapture
+      - name: Run App
+        run: target/release/platform-cv
+      - name: Check App
+        run: |
+          sleep 5
+          HTTP_CODE=$(curl -ik -X GET 'http://127.0.0.1:8080/health-check' -o /dev/null -w '%{http_code}\n' -s)
+          echo $HTTP_CODE
+          if [ "$HTTP_CODE" = "200" ]; then
+              exit 0
+          fi
+          exit 1
+      - name: Check App homepage
+        run: |
+          sleep 5
+          HTTP_CODE=$(curl -ik -X GET 'http://127.0.0.1:8080' -o /dev/null -w '%{http_code}\n' -s)
+          echo $HTTP_CODE
+          if [ "$HTTP_CODE" = "200" ]; then
+              exit 0
+          fi
+          exit 1
       - name: List files in target/release
         run: ls -al target/release
       - name: Save Artifacts
