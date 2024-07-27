@@ -1,6 +1,8 @@
 # Project Platform CV
 A simple app using Actix-web, Diesel and Docker.
 
+
+
 ## Require
 - [Rust Stable](https://rustup.rs)
 - [Postgres](https://www.postgresql.org/)
@@ -8,6 +10,14 @@ A simple app using Actix-web, Diesel and Docker.
 Or using [Docker](https://www.docker.com/)
 
 ## How to run
+### Run the project
+- Enter into project directory
+- Run `docker-compose up -d` for local environment database
+- - Run `cargo build`
+- Run `cargo run` for local environment
+- `http://127.0.0.1:8080/`
+- Enjoy! 😄
+- 
 ### Manual
 - Install postgresql and sqlite backend libraries, more details here
   - Install `libpq` and `libsqlite3` depends on your distribution.

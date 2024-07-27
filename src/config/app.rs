@@ -11,5 +11,6 @@ pub fn config_services(conf: &mut web::ServiceConfig) {
     )
     .service(web::resource("/").route(web::get().to(front_controller::homepage)))
     .service(Files::new("/uploads", "uploads").show_files_listing())
+    .service(Files::new("/assets", "assets").show_files_listing())
     .default_service(web::to(front_controller::handler_404));
 }

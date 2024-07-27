@@ -1,0 +1,236 @@
+/* styles.css */
+
+* {
+    .roboto-thin {
+        font-family: "Roboto", sans-serif;
+        font-weight: 100;
+        font-style: normal;
+    }
+
+    .roboto-light {
+        font-family: "Roboto", sans-serif;
+        font-weight: 300;
+        font-style: normal;
+    }
+
+    .roboto-regular {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .roboto-medium {
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    .roboto-bold {
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    .roboto-black {
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+    }
+
+    .roboto-thin-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 100;
+        font-style: italic;
+    }
+
+    .roboto-light-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 300;
+        font-style: italic;
+    }
+
+    .roboto-regular-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    .roboto-medium-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-style: italic;
+    }
+
+    .roboto-bold-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+    .roboto-black-italic {
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: italic;
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: transparent;
+    color: #000;
+    padding: 1rem 0;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.logo a {
+    color: #000;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin-left: 1.5rem;
+}
+
+.nav-links a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.nav-links a svg {
+    background-color: #000000;
+    color: #000000;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.nav-links .btn {
+    background: #007bff;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.hero {
+    background: url('/assets/images/hero-bg.jpg') no-repeat center center/cover;
+    color: #fff;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin: 0;
+    color: #000000;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    color: #000000;
+}
+
+.hero .btn {
+    background: #007bff;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.features {
+    padding: 2rem 0;
+}
+
+.features .container {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature {
+    text-align: center;
+    flex: 1;
+    margin: 1rem;
+}
+
+.feature h2 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.feature p {
+    font-size: 1rem;
+    color: #666;
+}
+
+footer {
+    background-color: #ffffff;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+footer .container {
+    background-color: #ffffff;
+    color: #000000;
+    margin: 0 auto;
+    padding: 0.2rem;
+}
+
+footer .container a {
+    color: #000000;
+}
+
+footer .social-network {
+    background-color: hsl(0, 0%, 95%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+footer .social-network .rs img {
+    width: 24px;
+    height: auto;
+    padding: 0.5rem;
+}
+
+footer .social-network .email a {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+}
