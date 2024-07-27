@@ -14,11 +14,13 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+
       - name: Cache Cargo registry
         uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Cache Cargo build
         uses: actions/cache@v2
         with:
@@ -26,16 +28,40 @@ jobs:
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-build-
+
       - name: Rust Linting and Formatting
         run: |
           cargo fmt 
           cargo clippy -- -D warnings
+
       - name: Build release version
         run: cargo build --release
+
       - name: Run tests
         run: cargo test -- --nocapture
+
       - name: Run App
-        run: target/release/platform-cv
+        run: |
+          docker-compose up -d
+          docker-compose ps
+          target/release/platform-cv
+
+      - name: Wait for service
+        run: |
+          sleep 5
+          while status="$(docker inspect --format="{{print .State.Status}}" "$(docker-compose ps -q app)")"; do
+            case $status in
+              starting) sleep 1;;
+              running) exit 0;;
+              unhealthy)
+                docker-compose ps
+                docker-compose logs php-fpm
+                exit 1
+              ;;
+            esac
+          done
+          exit 1
+
       - name: Check App
         run: |
           sleep 5
@@ -45,6 +71,7 @@ jobs:
               exit 0
           fi
           exit 1
+
       - name: Check App homepage
         run: |
           sleep 5
@@ -54,8 +81,10 @@ jobs:
               exit 0
           fi
           exit 1
+
       - name: List files in target/release
         run: ls -al target/release
+
       - name: Save Artifacts
         uses: actions/upload-artifact@v2
         with:
