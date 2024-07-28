@@ -219,10 +219,12 @@ footer .social-network {
     text-align: center;
     margin: 0 auto;
     padding: 1rem;
+    max-width: 100%;
 }
 
 footer .social-network .rs img {
-    width: 24px;
+    box-sizing: initial;
+    width: 70%;
     height: auto;
     padding: 0.5rem;
 }
