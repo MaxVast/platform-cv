@@ -41,9 +41,4 @@ joinable!(candidate -> entreprise (entreprise_id));
 joinable!(users -> entreprise (entreprise_id));
 joinable!(login_history -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    candidate,
-    entreprise,
-    login_history,
-    users,
-);
+allow_tables_to_appear_in_same_query!(candidate, entreprise, login_history, users,);

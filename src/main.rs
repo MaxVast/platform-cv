@@ -1,9 +1,9 @@
 mod config;
 mod constants;
 mod controller;
-mod templates;
-mod schema;
 mod models;
+mod schema;
+mod templates;
 
 use actix_cors::Cors;
 use actix_web::{http::header, web, App, HttpServer};
@@ -90,7 +90,13 @@ async fn main() -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http::{header, StatusCode}, body::to_bytes, test, App, web::{Bytes}};
+    use actix_web::{
+        body::to_bytes,
+        http::{header, StatusCode},
+        test,
+        web::Bytes,
+        App,
+    };
     use testcontainers::{clients, images::postgres::Postgres};
 
     #[test]
@@ -170,7 +176,6 @@ mod tests {
         }
     }
 
-
     #[actix_web::test]
     async fn test_startup_health_check_ok() {
         //CODE OK FOR testcontainers 0.14.0 not 0.20
@@ -181,7 +186,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         config::db::run_migration(&mut pool.get().unwrap());
 
@@ -200,9 +205,9 @@ mod tests {
                 )
                 .app_data(web::Data::new(pool.clone()))
                 .wrap(actix_web::middleware::Logger::default())
-                .configure(config::app::config_services)
+                .configure(config::app::config_services),
         )
-            .await;
+        .await;
 
         let resp = test::TestRequest::get()
             .uri("/health-check")

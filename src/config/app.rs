@@ -1,5 +1,5 @@
 use actix_files::Files;
-use actix_web::{web};
+use actix_web::web;
 use log::info;
 
 use crate::controller::*;

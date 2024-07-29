@@ -1,7 +1,14 @@
-use diesel::{prelude::*, Identifiable, Insertable, Queryable, AsExpression, FromSqlRow, serialize::{self, IsNull, Output, ToSql}, deserialize::{self, FromSql}, pg::{Pg, PgValue}, sql_types::Varchar};
+use diesel::{
+    deserialize::{self, FromSql},
+    pg::{Pg, PgValue},
+    prelude::*,
+    serialize::{self, IsNull, Output, ToSql},
+    sql_types::Varchar,
+    AsExpression, FromSqlRow, Identifiable, Insertable, Queryable,
+};
 use serde::{Deserialize, Serialize};
+use std::{fmt, io::Write, str::FromStr};
 use uuid::Uuid;
-use std::{io::Write, str::FromStr, fmt};
 
 use crate::{
     config::db::Connection,
@@ -51,9 +58,7 @@ impl User {
     }
 
     pub fn insert(new_user: UserDTO, conn: &mut Connection) -> QueryResult<usize> {
-        diesel::insert_into(users)
-            .values(&new_user)
-            .execute(conn)
+        diesel::insert_into(users).values(&new_user).execute(conn)
     }
 
     pub fn update(i: Uuid, updated_user: UserDTO, conn: &mut Connection) -> QueryResult<usize> {
@@ -99,11 +104,15 @@ impl FromStr for RoleType {
 
 impl fmt::Display for RoleType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", match self {
-            RoleType::SuperAdmin => "superadmin",
-            RoleType::Admin => "admin",
-            RoleType::User => "user",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                RoleType::SuperAdmin => "superadmin",
+                RoleType::Admin => "admin",
+                RoleType::User => "user",
+            }
+        )
     }
 }
 
