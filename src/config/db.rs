@@ -5,7 +5,7 @@ use diesel::{
     sql_query,
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use crate::models::user::{User, UserDTO};
+use crate::models::user::{RoleType, User, UserDTO};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -32,9 +32,10 @@ pub fn run_migration(conn: &mut PgConnection) {
     if !superadmin_exists {
         User::insert(UserDTO {
             username: "superadmin".to_string(),
+            entreprise_id: None,
             email: "mvast@syneidolab.com".to_string(),
             password: None,
-            role: "superadmin".to_string(),
+            role: RoleType::SuperAdmin,
         }, conn).expect("Error");
     }
 }
