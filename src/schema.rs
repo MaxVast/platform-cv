@@ -29,14 +29,16 @@ table! {
 table! {
     users (id) {
         id -> Uuid,
+        entreprise_id ->  Nullable<Uuid>,
         username -> Varchar,
         email -> Varchar,
         password -> Nullable<Varchar>,
-        role -> Varchar
+        role -> Varchar,
     }
 }
 
 joinable!(candidate -> entreprise (entreprise_id));
+joinable!(users -> entreprise (entreprise_id));
 joinable!(login_history -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
