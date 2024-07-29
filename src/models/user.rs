@@ -31,9 +31,15 @@ impl User {
             .first::<String>(conn)
             .is_ok()
     }
+
     pub fn insert(new_user: UserDTO, conn: &mut Connection) -> QueryResult<usize> {
         diesel::insert_into(users)
             .values(&new_user)
             .execute(conn)
     }
+
+    /*TODO
+        UPDATE
+        DELETE
+     */
 }
