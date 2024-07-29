@@ -66,6 +66,7 @@ impl User {
         diesel::delete(users.find(i)).execute(conn)
     }
 
+    #[allow(dead_code)]
     fn validate_role(role_data: &RoleType) -> Result<(), diesel::result::Error> {
         if RoleType::from_str(&role_data.to_string()).is_err() {
             return Err(diesel::result::Error::RollbackTransaction);
