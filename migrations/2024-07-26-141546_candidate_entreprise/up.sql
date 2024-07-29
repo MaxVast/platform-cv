@@ -14,3 +14,11 @@ CREATE TABLE candidate (
     file_name VARCHAR NOT NULL,
     motivation TEXT NOT NULL
 );
+
+ALTER TABLE users
+ADD COLUMN entreprise_id UUID;
+
+ALTER TABLE users
+ADD CONSTRAINT fk_entreprise
+FOREIGN KEY (entreprise_id)
+REFERENCES entreprise (id);
