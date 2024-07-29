@@ -5,6 +5,7 @@ use diesel::{
     sql_query,
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use crate::models::user::{User, UserDTO};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -25,4 +26,15 @@ pub fn init_db_pool(url: &str) -> Pool {
 pub fn run_migration(conn: &mut PgConnection) {
     conn.run_pending_migrations(MIGRATIONS)
         .expect("Failed to run migrations");
+
+    let superadmin_exists = User::get_superadmin_user(conn);
+
+    if !superadmin_exists {
+        User::insert(UserDTO {
+            username: "superadmin".to_string(),
+            email: "mvast@syneidolab.com".to_string(),
+            password: None,
+            role: "superadmin".to_string(),
+        }, conn).expect("Error");
+    }
 }

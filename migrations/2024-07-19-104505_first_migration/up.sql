@@ -5,7 +5,8 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
-    password VARCHAR NOT NULL
+    password VARCHAR,
+    role VARCHAR NOT NULL
 );
 
 CREATE TABLE login_history

@@ -2,6 +2,8 @@ mod config;
 mod constants;
 mod controller;
 mod templates;
+mod schema;
+mod models;
 
 use actix_cors::Cors;
 use actix_web::{http::header, web, App, HttpServer};
@@ -48,8 +50,9 @@ async fn main() -> io::Result<()> {
         .expect("Failed to get a connection from the pool");
     config::db::run_migration(conn);
 
-    println!("✅ Connected to database and table created !");
+    println!("{}", constants::DATABASE_STARTED);
     println!("{}", constants::SERVER_STARTED);
+    println!("http://{}", app_url);
 
     HttpServer::new(move || {
         // Split the string by '|' delimiter

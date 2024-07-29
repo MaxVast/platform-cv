@@ -1,6 +1,6 @@
 // @generated automatically by Diesel CLI.
-
-diesel::table! {
+use diesel::{allow_tables_to_appear_in_same_query, joinable, table};
+table! {
     candidate (id) {
         id -> Uuid,
         entreprise_id -> Uuid,
@@ -11,34 +11,35 @@ diesel::table! {
     }
 }
 
-diesel::table! {
+table! {
     entreprise (id) {
         id -> Uuid,
         name -> Varchar,
     }
 }
 
-diesel::table! {
+table! {
     login_history (id) {
         id -> Uuid,
         user_id -> Uuid,
-        login_timestamp -> Timestamptz,
+        login_timestamp -> Timestamp,
     }
 }
 
-diesel::table! {
+table! {
     users (id) {
         id -> Uuid,
         username -> Varchar,
         email -> Varchar,
-        password -> Varchar,
+        password -> Nullable<Varchar>,
+        role -> Varchar
     }
 }
 
-diesel::joinable!(candidate -> entreprise (entreprise_id));
-diesel::joinable!(login_history -> users (user_id));
+joinable!(candidate -> entreprise (entreprise_id));
+joinable!(login_history -> users (user_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
+allow_tables_to_appear_in_same_query!(
     candidate,
     entreprise,
     login_history,
