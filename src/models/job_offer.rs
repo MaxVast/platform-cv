@@ -1,6 +1,5 @@
 use chrono::{NaiveDateTime, Utc};
-use diesel::{deserialize::{self},
-             prelude::*,
+use diesel::{prelude::*,
              Identifiable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
