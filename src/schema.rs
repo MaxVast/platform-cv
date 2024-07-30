@@ -7,6 +7,8 @@ table! {
         lastname -> Varchar,
         firstname -> Varchar,
         file_name -> Varchar,
+        phone -> Varchar,
+        email -> Varchar,
         motivation -> Text,
     }
 }
@@ -49,7 +51,7 @@ table! {
         employment_type -> Varchar,
         salary -> Float,
         created_at -> Timestamp,
-        updated_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
     }
 }
 
