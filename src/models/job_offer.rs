@@ -1,6 +1,5 @@
 use chrono::{NaiveDateTime, Utc};
-use diesel::{prelude::*,
-             Identifiable, Queryable, Selectable};
+use diesel::{prelude::*, Identifiable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -52,26 +51,48 @@ impl JobOffer {
         job_offers.find(i).get_result::<JobOffer>(conn)
     }
 
-    pub fn find_by_entreprise_id(i_entreprise: Uuid, conn: &mut Connection) -> QueryResult<Vec<JobOffer>> {
-        job_offers.filter(entreprise_id.eq(i_entreprise)).load::<JobOffer>(conn)
+    pub fn find_by_entreprise_id(
+        i_entreprise: Uuid,
+        conn: &mut Connection,
+    ) -> QueryResult<Vec<JobOffer>> {
+        job_offers
+            .filter(entreprise_id.eq(i_entreprise))
+            .load::<JobOffer>(conn)
     }
 
-    pub fn find_one_by_entreprise_id(i: Uuid, i_entreprise: Uuid, conn: &mut Connection) -> QueryResult<JobOffer> {
-        job_offers.find(i)
-            .filter(entreprise_id.eq(i_entreprise)).get_result::<JobOffer>(conn)
+    pub fn find_one_by_entreprise_id(
+        i: Uuid,
+        i_entreprise: Uuid,
+        conn: &mut Connection,
+    ) -> QueryResult<JobOffer> {
+        job_offers
+            .find(i)
+            .filter(entreprise_id.eq(i_entreprise))
+            .get_result::<JobOffer>(conn)
     }
 
-    pub fn find_by_location(location_data: &str, conn: &mut Connection) -> QueryResult<Vec<JobOffer>> {
-        job_offers.filter(location.ilike(location_data)).load::<JobOffer>(conn)
+    pub fn find_by_location(
+        location_data: &str,
+        conn: &mut Connection,
+    ) -> QueryResult<Vec<JobOffer>> {
+        job_offers
+            .filter(location.ilike(location_data))
+            .load::<JobOffer>(conn)
     }
 
     pub fn insert(mut new_job_offer: JobOfferDTO, conn: &mut Connection) -> QueryResult<usize> {
         let now = Utc::now();
         new_job_offer.created_at = now.naive_utc();
-        diesel::insert_into(job_offers).values(&new_job_offer).execute(conn)
+        diesel::insert_into(job_offers)
+            .values(&new_job_offer)
+            .execute(conn)
     }
 
-    pub fn update(i: Uuid, mut updated_job_offer: JobOfferDTO, conn: &mut Connection) -> QueryResult<usize> {
+    pub fn update(
+        i: Uuid,
+        mut updated_job_offer: JobOfferDTO,
+        conn: &mut Connection,
+    ) -> QueryResult<usize> {
         let now = Utc::now();
         updated_job_offer.updated_at = Option::from(now.naive_utc());
         diesel::update(job_offers.find(i))
