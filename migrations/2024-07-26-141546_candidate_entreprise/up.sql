@@ -16,3 +16,27 @@ CREATE TABLE candidate (
     email VARCHAR NOT NULL,
     motivation TEXT NOT NULL
 );
+
+INSERT INTO entreprise (name)
+VALUES ('DPS');
+
+INSERT INTO entreprise (name)
+VALUES ('SyneidoLAB');
+
+INSERT INTO entreprise (name)
+VALUES ('Hobbynote');
+
+INSERT INTO entreprise (name)
+VALUES ('Elvis');
+
+INSERT INTO entreprise (name)
+VALUES ('Pictural health');
+
+INSERT INTO entreprise (name)
+VALUES ('SAKARA');
+
+INSERT INTO entreprise (name)
+VALUES ('Les poupées russes');
+
+INSERT INTO entreprise (name)
+VALUES ('Logic-Design');

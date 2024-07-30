@@ -80,9 +80,13 @@ body {
 }
 
 header {
-    background: transparent;
+    z-index: 1;
+    position: relative;
+    background: #ffffff;
     color: #000;
     padding: 1rem 0;
+    -webkit-box-shadow: 0px 13px 15px 0px rgba(0,0,0,0.10);
+    box-shadow: 0px 13px 15px 0px rgba(0,0,0,0.10);
 }
 
 nav {
@@ -131,8 +135,12 @@ nav {
     text-decoration: none;
 }
 
+main {
+    height: 100vh;
+    background: url('/assets/images/hero.png') no-repeat center/cover;
+}
+
 .hero {
-    background: url('/assets/images/hero-bg.jpg') no-repeat center center/cover;
     color: #fff;
     height: 50vh;
     display: flex;
@@ -158,12 +166,18 @@ nav {
 }
 
 .hero .btn {
-    background: #007bff;
+    background: #000000;
     color: #ffffff;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
+    padding: 0.75rem 3rem;
+    border-radius: 25px;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.25rem;
+}
+
+.hero .btn:hover {
+    background: #ffffff;
+    color: #000000;
+    border-color: #000000;
 }
 
 .features {
@@ -194,10 +208,8 @@ nav {
 }
 
 footer {
-    background-color: #ffffff;
     color: #fff;
     text-align: center;
-    padding: 1rem 0;
 }
 
 footer .container {
