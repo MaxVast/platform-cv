@@ -45,6 +45,7 @@ table! {
         description -> Text,
         requirements -> Nullable<Varchar>,
         location -> Varchar,
+        remote -> Nullable<Varchar>,
         employment_type -> Varchar,
         salary -> Float,
         created_at -> Timestamp,
