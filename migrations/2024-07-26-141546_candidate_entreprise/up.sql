@@ -12,5 +12,7 @@ CREATE TABLE candidate (
     lastname VARCHAR NOT NULL,
     firstname VARCHAR NOT NULL,
     file_name VARCHAR NOT NULL,
+    phone VARCHAR NOT NULL,
+    email VARCHAR NOT NULL,
     motivation TEXT NOT NULL
 );
