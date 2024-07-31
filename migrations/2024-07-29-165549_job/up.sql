@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE job_offers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    entreprise_id UUID NOT NULL REFERENCES entreprise(id),
+    company_id UUID NOT NULL REFERENCES company(id),
     title VARCHAR NOT NULL,
     description TEXT NOT NULL,
     requirements VARCHAR ,

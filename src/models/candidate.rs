@@ -1,7 +1,4 @@
-use diesel::{
-    prelude::*,
-    Identifiable, Insertable, Queryable,
-};
+use diesel::{prelude::*, Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -15,7 +12,7 @@ use crate::{
 #[diesel(table_name = candidate)]
 pub struct Candidate {
     pub id: Uuid,
-    pub entreprise_id: Uuid,
+    pub company_id: Uuid,
     pub lastname: String,
     pub firstname: String,
     pub file_name: String,
@@ -27,7 +24,7 @@ pub struct Candidate {
 #[derive(Insertable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = candidate)]
 pub struct CandidateDTO {
-    pub entreprise_id: Uuid,
+    pub company_id: Uuid,
     pub lastname: String,
     pub firstname: String,
     pub file_name: String,
@@ -45,12 +42,12 @@ impl Candidate {
         candidate.find(i).get_result::<Candidate>(conn)
     }
 
-    pub fn find_by_entreprise_id(
-        i_entreprise: Uuid,
+    pub fn find_by_company_id(
+        i_company: Uuid,
         conn: &mut Connection,
     ) -> QueryResult<Vec<Candidate>> {
         candidate
-            .filter(entreprise_id.eq(i_entreprise))
+            .filter(company_id.eq(i_company))
             .load::<Candidate>(conn)
     }
 

@@ -19,7 +19,7 @@ use crate::{
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
     pub id: Uuid,
-    pub entreprise_id: Option<Uuid>,
+    pub company_id: Option<Uuid>,
     pub username: String,
     pub email: String,
     pub password: Option<String>,
@@ -30,7 +30,7 @@ pub struct User {
 #[diesel(table_name = users)]
 pub struct UserDTO {
     pub username: String,
-    pub entreprise_id: Option<Uuid>,
+    pub company_id: Option<Uuid>,
     pub email: String,
     pub password: Option<String>,
     pub role: RoleType,

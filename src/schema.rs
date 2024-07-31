@@ -3,7 +3,7 @@ use diesel::{allow_tables_to_appear_in_same_query, joinable, table};
 table! {
     candidate (id) {
         id -> Uuid,
-        entreprise_id -> Uuid,
+        company_id -> Uuid,
         lastname -> Varchar,
         firstname -> Varchar,
         file_name -> Varchar,
@@ -14,7 +14,7 @@ table! {
 }
 
 table! {
-    entreprise (id) {
+    company (id) {
         id -> Uuid,
         name -> Varchar,
     }
@@ -31,7 +31,7 @@ table! {
 table! {
     users (id) {
         id -> Uuid,
-        entreprise_id ->  Nullable<Uuid>,
+        company_id ->  Nullable<Uuid>,
         username -> Varchar,
         email -> Varchar,
         password -> Nullable<Varchar>,
@@ -42,7 +42,7 @@ table! {
 table! {
     job_offers (id) {
         id -> Uuid,
-        entreprise_id ->  Uuid,
+        company_id ->  Uuid,
         title -> Varchar,
         description -> Text,
         requirements -> Nullable<Varchar>,
@@ -55,9 +55,9 @@ table! {
     }
 }
 
-joinable!(candidate -> entreprise (entreprise_id));
-joinable!(users -> entreprise (entreprise_id));
+joinable!(candidate -> company (company_id));
+joinable!(users -> company (company_id));
 joinable!(login_history -> users (user_id));
-joinable!(job_offers -> entreprise (entreprise_id));
+joinable!(job_offers -> company (company_id));
 
-allow_tables_to_appear_in_same_query!(candidate, entreprise, login_history, users, job_offers);
+allow_tables_to_appear_in_same_query!(candidate, company, login_history, users, job_offers);

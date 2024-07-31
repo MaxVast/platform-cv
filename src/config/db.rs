@@ -33,7 +33,7 @@ pub fn run_migration(conn: &mut PgConnection) {
         User::insert(
             UserDTO {
                 username: "superadmin".to_string(),
-                entreprise_id: None,
+                company_id: None,
                 email: "mvast@syneidolab.com".to_string(),
                 password: None,
                 role: RoleType::SuperAdmin,

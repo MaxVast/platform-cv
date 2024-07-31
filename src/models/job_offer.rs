@@ -12,7 +12,7 @@ use crate::{
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct JobOffer {
     pub id: Uuid,
-    pub entreprise_id: Uuid,
+    pub company_id: Uuid,
     pub title: String,
     pub description: String,
     pub requirements: Option<String>,
@@ -29,7 +29,7 @@ pub struct JobOffer {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(table_name = job_offers)]
 pub struct JobOfferDTO {
-    pub entreprise_id: Uuid,
+    pub company_id: Uuid,
     pub title: String,
     pub description: String,
     pub requirements: Option<String>,
@@ -51,23 +51,23 @@ impl JobOffer {
         job_offers.find(i).get_result::<JobOffer>(conn)
     }
 
-    pub fn find_by_entreprise_id(
-        i_entreprise: Uuid,
+    pub fn find_by_company_id(
+        i_company: Uuid,
         conn: &mut Connection,
     ) -> QueryResult<Vec<JobOffer>> {
         job_offers
-            .filter(entreprise_id.eq(i_entreprise))
+            .filter(company_id.eq(i_company))
             .load::<JobOffer>(conn)
     }
 
-    pub fn find_one_by_entreprise_id(
+    pub fn find_one_by_company_id(
         i: Uuid,
-        i_entreprise: Uuid,
+        i_company: Uuid,
         conn: &mut Connection,
     ) -> QueryResult<JobOffer> {
         job_offers
             .find(i)
-            .filter(entreprise_id.eq(i_entreprise))
+            .filter(company_id.eq(i_company))
             .get_result::<JobOffer>(conn)
     }
 
