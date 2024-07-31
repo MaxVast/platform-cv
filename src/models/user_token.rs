@@ -38,7 +38,8 @@ impl UserToken {
 
         debug!("Token Max Age: {}", max_age);
 
-        let now = Utc::now().timestamp_nanos_opt()
+        let now = Utc::now()
+            .timestamp_nanos_opt()
             .expect("Failed to get timestamp in nanoseconds")
             / 1_000_000_000; // nanosecond -> second
         let payload = UserToken {
@@ -53,6 +54,6 @@ impl UserToken {
             &payload,
             &EncodingKey::from_secret(&KEY),
         )
-            .unwrap()
+        .unwrap()
     }
 }

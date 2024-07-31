@@ -3,6 +3,7 @@ use diesel::{
     deserialize::{self, FromSql},
     pg::{Pg, PgValue},
     prelude::*,
+    result::Error as DieselError,
     serialize::{self, IsNull, Output, ToSql},
     sql_types::Varchar,
     AsExpression, FromSqlRow, Identifiable, Insertable, Queryable,
@@ -12,8 +13,8 @@ use std::{fmt, io::Write, str::FromStr};
 use uuid::Uuid;
 
 use crate::{
-    constants,
     config::db::Connection,
+    constants,
     models::{login_history::LoginHistory, user_token::UserToken},
     schema::users::{self, dsl::*},
 };
@@ -55,10 +56,12 @@ pub struct LoginInfoDTO {
 }
 
 impl User {
-
     pub fn signup(new_user: UserDTO, conn: &mut Connection) -> Result<String, String> {
         match Self::find_user_by_username(&new_user.username, conn) {
-            Ok(_) => Err(format!("User '{}' is already registered", &new_user.username)),
+            Ok(_) => Err(format!(
+                "User '{}' is already registered",
+                &new_user.username
+            )),
             Err(_) => {
                 if let Some(password_clone) = new_user.password.clone() {
                     match hash(password_clone, DEFAULT_COST) {
@@ -146,22 +149,27 @@ impl User {
             .is_ok()
     }
 
-    pub fn find_login_info_by_token(user_token: &UserToken, conn: &mut Connection) -> Result<LoginInfoDTO, String> {
+    pub fn find_login_info_by_token(
+        user_token: &UserToken,
+        conn: &mut Connection,
+    ) -> Result<LoginInfoDTO, String> {
         let user_result = users
             .filter(username.eq(&user_token.user))
             .filter(login_session.eq(&user_token.login_session))
-            .get_result::<User>(conn);
+            .first::<User>(conn);
 
-        if let Ok(user) = user_result {
-            return Ok(LoginInfoDTO {
-                username: user.username,
-                login_session: user.login_session.expect("REASON").to_string(),
-            });
+        match user_result {
+            Ok(user) => {
+                let login_session_data = user.login_session.ok_or("Login session is missing")?;
+                Ok(LoginInfoDTO {
+                    username: user.username,
+                    login_session: login_session_data,
+                })
+            }
+            Err(DieselError::NotFound) => Err("User not found".to_string()),
+            Err(e) => Err(format!("Database error: {}", e)),
         }
-
-        Err("User not found!".to_string())
     }
-
 
     pub fn generate_login_session() -> String {
         Uuid::new_v4().to_string()
