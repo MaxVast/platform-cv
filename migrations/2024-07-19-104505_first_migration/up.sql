@@ -6,7 +6,8 @@ CREATE TABLE users (
     username VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     password VARCHAR,
-    role VARCHAR NOT NULL
+    role VARCHAR NOT NULL,
+    login_session VARCHAR
 );
 
 CREATE TABLE login_history
