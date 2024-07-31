@@ -1,4 +1,4 @@
-use actix_web::{web, http::header::HeaderValue};
+use actix_web::web;
 use jsonwebtoken::{DecodingKey, TokenData, Validation};
 
 use crate::{
@@ -28,10 +28,9 @@ pub fn verify_token(
     }
 }
 
-pub fn is_auth_header_valid(authen_header: &HeaderValue) -> bool {
+/*pub fn is_auth_header_valid(authen_header: &HeaderValue) -> bool {
     if let Ok(authen_str) = authen_header.to_str() {
         return authen_str.starts_with("bearer") || authen_str.starts_with("Bearer");
     }
-
-    return false;
-}
+    false
+}*/

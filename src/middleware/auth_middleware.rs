@@ -19,10 +19,10 @@ use crate::utils::token_utils;
 pub struct Authentication;
 
 impl<S, B> Transform<S, ServiceRequest> for Authentication
-    where
-        S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-        S::Future: 'static,
-        B: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
 {
     type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
@@ -40,10 +40,10 @@ pub struct AuthenticationMiddleware<S> {
 }
 
 impl<S, B> Service<ServiceRequest> for AuthenticationMiddleware<S>
-    where
-        S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-        S::Future: 'static,
-        B: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
 {
     type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
@@ -60,13 +60,17 @@ impl<S, B> Service<ServiceRequest> for AuthenticationMiddleware<S>
             HeaderName::from_static("content-length"),
             HeaderValue::from_static("true"),
         );
+        #[allow(clippy::if_same_then_else)]
         if Method::OPTIONS == *req.method() {
             authenticate_pass = true;
-        } else if Method::POST == *req.method(){
+        } else if Method::POST == *req.method() {
             authenticate_pass = true;
         } else {
             for ignore_route in constants::IGNORE_ROUTES.iter() {
-                if req.path() == *ignore_route || req.path().starts_with("/uploads") || req.path().starts_with("/assets") {
+                if req.path() == *ignore_route
+                    || req.path().starts_with("/uploads")
+                    || req.path().starts_with("/assets")
+                {
                     authenticate_pass = true;
                     break;
                 }
@@ -107,7 +111,7 @@ impl<S, B> Service<ServiceRequest> for AuthenticationMiddleware<S>
                 let (request, _pl) = req.into_parts();
                 #[warn(deprecated)]
                 let response = HttpResponse::Found()
-                    .header("Location", "/")
+                    .append_header(("Location", "/"))
                     .finish()
                     .map_into_right_body();
 

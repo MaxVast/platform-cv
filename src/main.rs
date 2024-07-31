@@ -1,10 +1,10 @@
 mod config;
 mod constants;
 mod controller;
+mod middleware;
 mod models;
 mod schema;
 mod templates;
-mod middleware;
 mod utils;
 
 use actix_cors::Cors;

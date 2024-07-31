@@ -15,7 +15,7 @@ use uuid::Uuid;
 use crate::{
     config::db::Connection,
     constants,
-    models::{login_history::LoginHistory, user_token::UserToken, company::Company},
+    models::{company::Company, login_history::LoginHistory, user_token::UserToken},
     schema::users::{self, dsl::*},
 };
 
@@ -53,7 +53,7 @@ pub struct LoginInfoDTO {
     pub username: String,
     pub login_session: String,
     pub role: String,
-    pub company: Option<String>
+    pub company: Option<String>,
 }
 
 impl User {
@@ -86,12 +86,10 @@ impl User {
     }
 
     pub fn login(login: LoginDTO, conn: &mut Connection) -> Option<LoginInfoDTO> {
-
         let user_result = users
             .filter(username.eq(&login.username_or_email))
             .or_filter(email.eq(&login.username_or_email))
             .get_result::<User>(conn);
-
 
         if let Ok(user_to_verify) = user_result {
             if !user_to_verify.password.clone()?.is_empty()
@@ -111,7 +109,7 @@ impl User {
                                 Ok(company) => Some(company.name),
                                 Err(_) => None, // Handle error as needed
                             }
-                        },
+                        }
                         None => None, // No company_id present
                     };
 
@@ -124,7 +122,7 @@ impl User {
                             username: user_to_verify.username,
                             login_session: login_session_str,
                             role: user_to_verify.role.to_string(),
-                            company: Some(company_info.unwrap_or_else(|| "".to_string()))
+                            company: Some(company_info.unwrap_or_else(|| "".to_string())),
                         });
                     }
                 }
@@ -133,7 +131,7 @@ impl User {
                     username: user_to_verify.username,
                     login_session: String::new(),
                     role: String::new(),
-                    company: Some(String::new())
+                    company: Some(String::new()),
                 });
             }
         }
@@ -180,7 +178,6 @@ impl User {
             .first::<User>(conn);
 
         match user_result {
-
             Ok(user) => {
                 let login_session_data = user.login_session.ok_or("Login session is missing")?;
                 // Check if company_id is present
@@ -191,7 +188,7 @@ impl User {
                             Ok(company) => Some(company.name),
                             Err(_) => None, // Handle error as needed
                         }
-                    },
+                    }
                     None => None, // No company_id present
                 };
 
