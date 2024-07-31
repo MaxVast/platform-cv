@@ -1,3 +1,4 @@
+use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{
     deserialize::{self, FromSql},
     pg::{Pg, PgValue},
@@ -11,7 +12,9 @@ use std::{fmt, io::Write, str::FromStr};
 use uuid::Uuid;
 
 use crate::{
+    constants,
     config::db::Connection,
+    models::{login_history::LoginHistory, user_token::UserToken},
     schema::users::{self, dsl::*},
 };
 
@@ -24,6 +27,7 @@ pub struct User {
     pub email: String,
     pub password: Option<String>,
     pub role: RoleType,
+    pub login_session: Option<String>,
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize, AsChangeset)]
@@ -34,9 +38,135 @@ pub struct UserDTO {
     pub email: String,
     pub password: Option<String>,
     pub role: RoleType,
+    pub login_session: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LoginDTO {
+    pub username_or_email: String,
+    pub password: String,
+}
+
+#[derive(Insertable, Serialize, Deserialize)]
+#[diesel(table_name = users)]
+pub struct LoginInfoDTO {
+    pub username: String,
+    pub login_session: String,
 }
 
 impl User {
+
+    pub fn signup(new_user: UserDTO, conn: &mut Connection) -> Result<String, String> {
+        match Self::find_user_by_username(&new_user.username, conn) {
+            Ok(_) => Err(format!("User '{}' is already registered", &new_user.username)),
+            Err(_) => {
+                if let Some(password_clone) = new_user.password.clone() {
+                    match hash(password_clone, DEFAULT_COST) {
+                        Ok(password_hash) => {
+                            let new_user = UserDTO {
+                                password: Some(password_hash),
+                                ..new_user
+                            };
+                            match Self::insert(new_user, conn) {
+                                Ok(_) => Ok(constants::MESSAGE_SIGNUP_SUCCESS.to_string()),
+                                Err(e) => Err(format!("Failed to insert user: {}", e)),
+                            }
+                        }
+                        Err(e) => Err(format!("Failed to hash password: {}", e)),
+                    }
+                } else {
+                    Err("Password is required".to_string())
+                }
+            }
+        }
+    }
+
+    pub fn login(login: LoginDTO, conn: &mut Connection) -> Option<LoginInfoDTO> {
+        if let Ok(user_to_verify) = users
+            .filter(username.eq(&login.username_or_email))
+            .or_filter(email.eq(&login.username_or_email))
+            .get_result::<User>(conn)
+        {
+            if !user_to_verify.password.clone()?.is_empty()
+                && verify(&login.password, &user_to_verify.password?.to_string()).unwrap()
+            {
+                if let Some(login_history) = LoginHistory::create(&user_to_verify.username, conn) {
+                    if LoginHistory::save_login_history(login_history, conn).is_err() {
+                        return None;
+                    }
+                    let login_session_str = User::generate_login_session();
+                    if User::update_login_session_to_db(
+                        &user_to_verify.username,
+                        &login_session_str,
+                        conn,
+                    ) {
+                        return Some(LoginInfoDTO {
+                            username: user_to_verify.username,
+                            login_session: login_session_str,
+                        });
+                    }
+                }
+            } else {
+                return Some(LoginInfoDTO {
+                    username: user_to_verify.username,
+                    login_session: String::new(),
+                });
+            }
+        }
+
+        None
+    }
+
+    pub fn logout(user_id: Uuid, conn: &mut Connection) {
+        if let Ok(user) = users.find(user_id).get_result::<User>(conn) {
+            Self::update_login_session_to_db(&user.username, "", conn);
+        }
+    }
+
+    pub fn update_login_session_to_db(
+        un: &str,
+        login_session_str: &str,
+        conn: &mut Connection,
+    ) -> bool {
+        if let Ok(user) = User::find_user_by_username(un, conn) {
+            diesel::update(users.find(user.id))
+                .set(login_session.eq(login_session_str))
+                .execute(conn)
+                .is_ok()
+        } else {
+            false
+        }
+    }
+
+    pub fn is_valid_login_session(user_token: &UserToken, conn: &mut Connection) -> bool {
+        users
+            .filter(username.eq(&user_token.user))
+            .filter(login_session.eq(&user_token.login_session))
+            .get_result::<User>(conn)
+            .is_ok()
+    }
+
+    pub fn find_login_info_by_token(user_token: &UserToken, conn: &mut Connection) -> Result<LoginInfoDTO, String> {
+        let user_result = users
+            .filter(username.eq(&user_token.user))
+            .filter(login_session.eq(&user_token.login_session))
+            .get_result::<User>(conn);
+
+        if let Ok(user) = user_result {
+            return Ok(LoginInfoDTO {
+                username: user.username,
+                login_session: user.login_session.expect("REASON").to_string(),
+            });
+        }
+
+        Err("User not found!".to_string())
+    }
+
+
+    pub fn generate_login_session() -> String {
+        Uuid::new_v4().to_string()
+    }
+
     pub fn find_all(conn: &mut Connection) -> QueryResult<Vec<User>> {
         users.load::<User>(conn)
     }

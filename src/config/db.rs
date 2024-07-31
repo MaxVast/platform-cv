@@ -1,9 +1,6 @@
-use crate::models::user::{RoleType, User, UserDTO};
-#[allow(unused_imports)]
 use diesel::{
     pg::PgConnection,
     r2d2::{self, ConnectionManager},
-    sql_query,
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
@@ -26,20 +23,4 @@ pub fn init_db_pool(url: &str) -> Pool {
 pub fn run_migration(conn: &mut PgConnection) {
     conn.run_pending_migrations(MIGRATIONS)
         .expect("Failed to run migrations");
-
-    let superadmin_exists = User::get_superadmin_user(conn);
-
-    if !superadmin_exists {
-        User::insert(
-            UserDTO {
-                username: "superadmin".to_string(),
-                company_id: None,
-                email: "mvast@syneidolab.com".to_string(),
-                password: None,
-                role: RoleType::SuperAdmin,
-            },
-            conn,
-        )
-        .expect("Error");
-    }
 }

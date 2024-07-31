@@ -21,6 +21,9 @@ INSERT INTO company (name)
 VALUES ('DPS');
 
 INSERT INTO company (name)
+VALUES ('Syneido');
+
+INSERT INTO company (name)
 VALUES ('SyneidoLAB');
 
 INSERT INTO company (name)

@@ -36,6 +36,7 @@ table! {
         email -> Varchar,
         password -> Nullable<Varchar>,
         role -> Varchar,
+        login_session -> Nullable<Varchar>,
     }
 }
 
