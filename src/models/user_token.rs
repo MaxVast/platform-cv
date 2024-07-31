@@ -19,6 +19,8 @@ pub struct UserToken {
     pub exp: i64,
     // data
     pub user: String,
+    pub role: String,
+    pub company: String,
     pub login_session: String,
 }
 
@@ -46,6 +48,8 @@ impl UserToken {
             iat: now,
             exp: now + max_age,
             user: login.username.clone(),
+            role: login.role.clone(),
+            company: login.company.clone().expect("REASON"),
             login_session: login.login_session.clone(),
         };
 

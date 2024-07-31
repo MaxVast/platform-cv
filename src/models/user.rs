@@ -15,7 +15,7 @@ use uuid::Uuid;
 use crate::{
     config::db::Connection,
     constants,
-    models::{login_history::LoginHistory, user_token::UserToken},
+    models::{login_history::LoginHistory, user_token::UserToken, company::Company},
     schema::users::{self, dsl::*},
 };
 
@@ -48,11 +48,12 @@ pub struct LoginDTO {
     pub password: String,
 }
 
-#[derive(Insertable, Serialize, Deserialize)]
-#[diesel(table_name = users)]
+#[derive(Serialize, Deserialize)]
 pub struct LoginInfoDTO {
     pub username: String,
     pub login_session: String,
+    pub role: String,
+    pub company: Option<String>
 }
 
 impl User {
@@ -85,11 +86,14 @@ impl User {
     }
 
     pub fn login(login: LoginDTO, conn: &mut Connection) -> Option<LoginInfoDTO> {
-        if let Ok(user_to_verify) = users
+
+        let user_result = users
             .filter(username.eq(&login.username_or_email))
             .or_filter(email.eq(&login.username_or_email))
-            .get_result::<User>(conn)
-        {
+            .get_result::<User>(conn);
+
+
+        if let Ok(user_to_verify) = user_result {
             if !user_to_verify.password.clone()?.is_empty()
                 && verify(&login.password, &user_to_verify.password?.to_string()).unwrap()
             {
@@ -98,6 +102,19 @@ impl User {
                         return None;
                     }
                     let login_session_str = User::generate_login_session();
+
+                    // Check if company_id is present
+                    let company_info = match user_to_verify.company_id {
+                        Some(id_company) => {
+                            // Retrieve company name if company_id is present
+                            match Company::find_by_id(id_company, conn) {
+                                Ok(company) => Some(company.name),
+                                Err(_) => None, // Handle error as needed
+                            }
+                        },
+                        None => None, // No company_id present
+                    };
+
                     if User::update_login_session_to_db(
                         &user_to_verify.username,
                         &login_session_str,
@@ -106,6 +123,8 @@ impl User {
                         return Some(LoginInfoDTO {
                             username: user_to_verify.username,
                             login_session: login_session_str,
+                            role: user_to_verify.role.to_string(),
+                            company: Some(company_info.unwrap_or_else(|| "".to_string()))
                         });
                     }
                 }
@@ -113,6 +132,8 @@ impl User {
                 return Some(LoginInfoDTO {
                     username: user_to_verify.username,
                     login_session: String::new(),
+                    role: String::new(),
+                    company: Some(String::new())
                 });
             }
         }
@@ -159,11 +180,26 @@ impl User {
             .first::<User>(conn);
 
         match user_result {
+
             Ok(user) => {
                 let login_session_data = user.login_session.ok_or("Login session is missing")?;
+                // Check if company_id is present
+                let company_info = match user.company_id {
+                    Some(id_company) => {
+                        // Retrieve company name if company_id is present
+                        match Company::find_by_id(id_company, conn) {
+                            Ok(company) => Some(company.name),
+                            Err(_) => None, // Handle error as needed
+                        }
+                    },
+                    None => None, // No company_id present
+                };
+
                 Ok(LoginInfoDTO {
                     username: user.username,
                     login_session: login_session_data,
+                    role: user.role.to_string(),
+                    company: Some(company_info.unwrap_or_else(|| "".to_string())), // Provide a default value if company_info is None
                 })
             }
             Err(DieselError::NotFound) => Err("User not found".to_string()),

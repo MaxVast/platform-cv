@@ -4,6 +4,8 @@ mod controller;
 mod models;
 mod schema;
 mod templates;
+mod middleware;
+mod utils;
 
 use actix_cors::Cors;
 use actix_web::{http::header, web, App, HttpServer};
@@ -73,12 +75,15 @@ async fn main() -> io::Result<()> {
         }
 
         App::new()
+            .wrap(crate::middleware::auth_middleware::Authentication) // Comment this line if you want to integrate with yew-address-book-frontend
+            //.wrap_fn(|req, srv| srv.call(req).map(|res| res))
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .wrap(actix_web::middleware::Logger::default())
             .wrap(actix_web::middleware::Logger::new(
                 "%a %{User-Agent}i %{Host}i",
             ))
+            .wrap(actix_web::middleware::Logger::default())
             .configure(config::app::config_services)
     })
     .bind(&app_url)?
