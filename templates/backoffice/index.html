@@ -26,6 +26,9 @@
         </div>
         <ul class="nav-links">
             <li><a href="/jobs" class="obviously-regular">Offres d'emploi</a></li>
+            {% if role == "superadmin" %}
+            <li><a href="/users" class="obviously-regular">User</a></li>
+            {% endif %}
             <li><a href="/about" class="obviously-regular">À propos</a></li>
             <li><a id="logout" class="obviously-regular">Déconnexion</a></li>
         </ul>
@@ -34,13 +37,17 @@
 <main>
     <section class="hero">
         <h1>BO ADMIN</h1>
-
+        <div>
+            <p>user : {{ username }}</p>
+            <p>entreprise : {{ company_name }}</p>
+        </div>
     </section>
 </main>
 <footer>
     <div class="social-network">
-    <div class="container">
-        <p class="obviously-regular">&copy; 2024 Platforme CV. Tous droits réservés.</p>
+        <div class="container">
+            <p class="obviously-regular">&copy; 2024 Platforme CV. Tous droits réservés.</p>
+        </div>
     </div>
 </footer>
 <!-- Bootstrap JS and dependencies from CDN with local fallback -->

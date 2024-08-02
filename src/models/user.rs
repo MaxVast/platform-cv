@@ -104,13 +104,12 @@ impl User {
                     // Check if company_id is present
                     let company_info = match user_to_verify.company_id {
                         Some(id_company) => {
-                            // Retrieve company name if company_id is present
                             match Company::find_by_id(id_company, conn) {
                                 Ok(company) => Some(company.name),
-                                Err(_) => None, // Handle error as needed
+                                Err(_) => None,
                             }
                         }
-                        None => None, // No company_id present
+                        None => None,
                     };
 
                     if User::update_login_session_to_db(
@@ -127,15 +126,9 @@ impl User {
                     }
                 }
             } else {
-                return Some(LoginInfoDTO {
-                    username: user_to_verify.username,
-                    login_session: String::new(),
-                    role: String::new(),
-                    company: Some(String::new()),
-                });
+                return None
             }
         }
-
         None
     }
 
@@ -218,6 +211,13 @@ impl User {
 
     pub fn find_user_by_username(un: &str, conn: &mut Connection) -> QueryResult<User> {
         users.filter(username.eq(un)).get_result::<User>(conn)
+    }
+
+    pub fn find_user_by_username_or_email(un: &str, conn: &mut Connection) -> bool {
+        users
+            .filter(username.eq(un).or(email.eq(un)))
+            .first::<User>(conn)
+            .is_ok()
     }
 
     pub fn get_superadmin_user(conn: &mut Connection) -> bool {
