@@ -1,9 +1,8 @@
-#[allow(dead_code)]
 pub const SERVER_STARTED: &str = "✅ Server started successfully";
 pub const DATABASE_STARTED: &str = "✅ Connected to database and table created !";
 pub const PATH_UPLOAD_CV: &str = "uploads/cv";
 pub const MESSAGE_SIGNUP_SUCCESS: &str = "Signup successfully";
-pub const MESSAGE_LOGIN_SUCCESS: &str = "Login successfully";
+//pub const MESSAGE_LOGIN_SUCCESS: &str = "Login successfully";
 pub const MESSAGE_LOGIN_FAILED: &str = "Wrong username or password, please try again";
 pub const MESSAGE_USER_NOT_FOUND: &str = "User not found, please signup";
 //pub const MESSAGE_LOGOUT_SUCCESS: &str = "Logout successfully";

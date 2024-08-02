@@ -103,12 +103,10 @@ impl User {
 
                     // Check if company_id is present
                     let company_info = match user_to_verify.company_id {
-                        Some(id_company) => {
-                            match Company::find_by_id(id_company, conn) {
-                                Ok(company) => Some(company.name),
-                                Err(_) => None,
-                            }
-                        }
+                        Some(id_company) => match Company::find_by_id(id_company, conn) {
+                            Ok(company) => Some(company.name),
+                            Err(_) => None,
+                        },
                         None => None,
                     };
 
@@ -126,7 +124,7 @@ impl User {
                     }
                 }
             } else {
-                return None
+                return None;
             }
         }
         None

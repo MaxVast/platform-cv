@@ -2,7 +2,7 @@ use actix_files::Files;
 use actix_web::web;
 use log::info;
 
-use crate::controller::{*, back_office::back_office_controller};
+use crate::controller::{back_office::back_office_controller, *};
 //Config server
 pub fn config_services(conf: &mut web::ServiceConfig) {
     info!("Configuring routes...");
@@ -11,7 +11,7 @@ pub fn config_services(conf: &mut web::ServiceConfig) {
             .service(
                 web::resource("/login")
                     .route(web::get().to(back_office_controller::login))
-                    .route(web::post().to(back_office_controller::login))
+                    .route(web::post().to(back_office_controller::login)),
             )
             .service(web::resource("/").route(web::get().to(back_office_controller::homepage)))
             .service(

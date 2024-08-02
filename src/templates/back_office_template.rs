@@ -11,5 +11,6 @@ pub struct HomepageBackOfficeTemplate<'a> {
     pub username: String,
     pub company_name: String,
     pub role: &'a String,
+    #[allow(dead_code)]
     pub login_session: &'a String,
 }

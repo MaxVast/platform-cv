@@ -1,11 +1,15 @@
-use actix_web::{web};
 use actix_web::cookie::Cookie;
+use actix_web::web;
 use jsonwebtoken::{DecodingKey, TokenData, Validation};
 
-use crate::{config::db::Pool, constants, models::{
-    user::{User, LoginInfoDTO},
-    user_token::{UserToken, KEY},
-}};
+use crate::{
+    config::db::Pool,
+    constants,
+    models::{
+        user::{LoginInfoDTO, User},
+        user_token::{UserToken, KEY},
+    },
+};
 
 pub fn decode_token(token: String) -> jsonwebtoken::errors::Result<TokenData<UserToken>> {
     jsonwebtoken::decode::<UserToken>(
@@ -27,7 +31,7 @@ pub fn verify_token(
 }
 
 pub fn get_data_token_to_login_info(token: Cookie) -> Result<LoginInfoDTO, String> {
-    if  let Ok(token_data) = decode_token(token.value().to_string()) {
+    if let Ok(token_data) = decode_token(token.value().to_string()) {
         let claims = token_data.claims;
         let login_info_dto = LoginInfoDTO {
             username: claims.user.to_string(),
