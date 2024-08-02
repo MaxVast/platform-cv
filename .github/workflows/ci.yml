@@ -48,7 +48,7 @@ jobs:
         run: cargo test -- --nocapture
 
       - name: Docker build images
-        run: docker-compose build
+        run: docker-compose -f docker-compose.yml build
 
       - name: Run container Docker
         run: |
