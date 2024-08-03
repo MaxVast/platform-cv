@@ -13,15 +13,14 @@ pub fn config_services(conf: &mut web::ServiceConfig) {
                     .route(web::get().to(back_office_controller::login))
                     .route(web::post().to(back_office_controller::login)),
             )
+            .service(web::resource("").route(web::get().to(back_office_controller::homepage)))
             .service(web::resource("/").route(web::get().to(back_office_controller::homepage)))
+            .service(web::resource("/logout").route(web::post().to(back_office_controller::logout)))
             .service(
-                web::resource("/logout").route(web::post().to(back_office_controller::logout)),
+                web::resource("/signup")
+                    .route(web::get().to(back_office_controller::signup))
+                    .route(web::post().to(back_office_controller::signup)),
             ), /*.service(
-                   web::resource("/signup").route(web::post().to(back_office_controller::post_signup)),
-                   web::resource("/signup").route(web::get().to(back_office_controller::get_signup)),
-               )
-
-               .service(
                    web::resource("/me").route(web::get().to(back_office_controller::me)),
                )*/
     )

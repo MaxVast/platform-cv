@@ -2,7 +2,8 @@ use crate::{
     config::db::Pool,
     constants,
     models::{
-        user::{LoginDTO, User},
+        company::Company,
+        user::{LoginDTO, User, UserDTO},
         user_token::UserToken,
     },
     templates::back_office_template::*,
@@ -15,15 +16,47 @@ use actix_web::{
 };
 use askama::Template;
 
-/*pub async fn signup(
-    user_dto: web::Json<UserDTO>,
-    pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
-    match account_service::signup(user_dto.0, &pool) {
-        Ok(message) => Ok(HttpResponse::Ok().json(ResponseBody::new(&message, constants::EMPTY))),
-        Err(err) => Err(err),
+pub async fn signup(
+    req: HttpRequest,
+    payload: Option<Json<UserDTO>>,
+    pool: Data<Pool>,
+) -> HttpResponse {
+    if let Some(token) = req.cookie("token") {
+        if token_utils::get_role_superadmin(token.clone()) {
+            if let Ok(login_info_token) = token_utils::get_data_token_to_login_info(token) {
+                match *req.method() {
+                    actix_web::http::Method::GET => {
+                        let company_data = Company::find_all(&mut pool.get().unwrap());
+                        let companies = company_data.unwrap_or_else(|_| Vec::new());
+                        let template = AddUserBackOfficeTemplate {
+                            list_company: &companies,
+                            role: &login_info_token.role,
+                        }
+                        .render()
+                        .unwrap();
+
+                        return HttpResponse::Ok().content_type("text/html").body(template);
+                    }
+                    actix_web::http::Method::POST => {
+                        let user_dto: UserDTO = payload.expect("REASON").into_inner();
+                        match User::signup(user_dto, &mut pool.get().unwrap()) {
+                            Ok(message) => HttpResponse::Created().body(message),
+                            Err(message) => HttpResponse::BadRequest().body(message),
+                        }
+                    }
+                    _ => HttpResponse::MethodNotAllowed().finish(),
+                }
+            } else {
+                HttpResponse::InternalServerError()
+                    .body(constants::MESSAGE_PROCESS_TOKEN_ERROR.to_string())
+            }
+        } else {
+            HttpResponse::Unauthorized().body(constants::MESSAGE_SUPERADMIN_NOT_FOUND.to_string())
+        }
+    } else {
+        HttpResponse::Unauthorized().body(constants::MESSAGE_TOKEN_MISSING.to_string())
     }
-}*/
+}
 
 pub async fn homepage(req: HttpRequest) -> HttpResponse {
     if let Some(token) = req.cookie("token") {
@@ -36,12 +69,11 @@ pub async fn homepage(req: HttpRequest) -> HttpResponse {
                     .unwrap_or_else(|| "".to_string()),
                 role: &login_info_token.role,
                 login_session: &login_info_token.login_session,
-            };
-            let response_body = template.render().unwrap();
+            }
+            .render()
+            .unwrap();
 
-            return HttpResponse::Ok()
-                .content_type("text/html")
-                .body(response_body);
+            return HttpResponse::Ok().content_type("text/html").body(template);
         }
         HttpResponse::InternalServerError().body(constants::MESSAGE_PROCESS_TOKEN_ERROR.to_string())
     } else {
@@ -57,11 +89,8 @@ pub async fn login(
 ) -> HttpResponse {
     match *req.method() {
         actix_web::http::Method::GET => {
-            let template = LoginBackOfficeTemplate {};
-            let response_body = template.render().unwrap();
-            HttpResponse::Ok()
-                .content_type("text/html")
-                .body(response_body)
+            let template = LoginBackOfficeTemplate {}.render().unwrap();
+            HttpResponse::Ok().content_type("text/html").body(template)
         }
         actix_web::http::Method::POST => {
             let login_dto: LoginDTO = payload.expect("REASON").into_inner();
@@ -113,11 +142,14 @@ pub async fn logout(req: HttpRequest, pool: Data<Pool>) -> HttpResponse {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use actix_cors::Cors;
     use actix_http::header::COOKIE;
-    use super::*;
-    use actix_web::{http::{header, StatusCode}, test, App, web};
     use actix_web::cookie::Cookie;
+    use actix_web::{
+        http::{header, StatusCode},
+        test, web, App,
+    };
     use testcontainers::clients;
     use testcontainers::images::postgres::Postgres;
 
@@ -130,7 +162,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -151,7 +183,7 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let resp = test::TestRequest::get()
             .uri("/admin/login")
@@ -170,7 +202,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -191,13 +223,12 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let login_dto = LoginDTO {
             username_or_email: "superadmin".to_string(),
             password: "azerty".to_string(),
         };
-
 
         let resp = test::TestRequest::post()
             .uri("/admin/login")
@@ -217,7 +248,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -238,13 +269,12 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let login_dto = LoginDTO {
             username_or_email: "toto".to_string(),
             password: "toto12".to_string(),
         };
-
 
         let resp = test::TestRequest::post()
             .uri("/admin/login")
@@ -264,7 +294,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -285,7 +315,7 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let login_dto = LoginDTO {
             username_or_email: "superadmin".to_string(),
@@ -328,7 +358,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -349,7 +379,7 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let login_dto = LoginDTO {
             username_or_email: "superadmin".to_string(),
@@ -381,7 +411,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -402,7 +432,7 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let login_dto = LoginDTO {
             username_or_email: "superadmin".to_string(),
@@ -445,7 +475,7 @@ mod tests {
                 "postgres://postgres:postgres@127.0.0.1:{}/postgres",
                 postgres.get_host_port_ipv4(5432)
             )
-                .as_str(),
+            .as_str(),
         );
         crate::config::db::run_migration(&mut pool.get().unwrap());
 
@@ -466,7 +496,7 @@ mod tests {
                 .wrap(actix_web::middleware::Logger::default())
                 .configure(crate::config::app::config_services),
         )
-            .await;
+        .await;
 
         let req = test::TestRequest::get()
             .uri("/admin/")

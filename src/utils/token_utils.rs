@@ -2,6 +2,7 @@ use actix_web::cookie::Cookie;
 use actix_web::web;
 use jsonwebtoken::{DecodingKey, TokenData, Validation};
 
+use crate::models::user::RoleType;
 use crate::{
     config::db::Pool,
     constants,
@@ -42,6 +43,15 @@ pub fn get_data_token_to_login_info(token: Cookie) -> Result<LoginInfoDTO, Strin
         Ok(login_info_dto)
     } else {
         Err(constants::MESSAGE_PROCESS_TOKEN_ERROR.to_string())
+    }
+}
+
+pub fn get_role_superadmin(token: Cookie) -> bool {
+    if let Ok(token_data) = decode_token(token.value().to_string()) {
+        let claims = token_data.claims;
+        claims.role == RoleType::SuperAdmin.to_string()
+    } else {
+        false
     }
 }
 
