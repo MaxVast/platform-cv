@@ -27,7 +27,7 @@
         <ul class="nav-links">
             <li><a href="/admin/jobs" class="obviously-regular">Offres d'emploi</a></li>
             {% if role == "superadmin" %}
-            <li><a href="/admin/users" class="obviously-regular">User</a></li>
+            <!--<li><a href="/admin/users" class="obviously-regular">User</a></li>-->
             <li><a href="/admin/signup" class="obviously-regular">Sign up user</a></li>
             {% endif %}
             <li><a href="/admin/about" class="obviously-regular">À propos</a></li>
@@ -36,11 +36,50 @@
     </nav>
 </header>
 <main>
-    <section class="hero">
-        <h1>BO ADMIN</h1>
-        <div>
-            <p>user : {{ username }}</p>
-            <p>entreprise : {{ company_name }}</p>
+    <section class="d-flex flex-column justify-content-center">
+        <div class="container text-center">
+            <div class="row justify-content-md-center">
+                <div  class="col-md-auto mt-5">
+                    <h2>welcome {{ username }} de {{ company_name }} </h2>
+                </div>
+            </div>
+
+        <!-- Table of Candidates -->
+            <div class="row justify-content-md-center">
+                <div class="container text-center">
+                    <div  class="col-md-auto mt-2">
+                        <h2 class="text-center mb-4">Liste des Candidats</h2>
+                    </div>
+                    {% if list_candidate.len() == 0 %}
+                    <div  class="col-md-auto mt-2">
+                        <p>Aucun candidat n'a postulé pour le moment.</p>
+                    </div>
+                    {% else %}
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for candidate in list_candidate %}
+                                <tr>
+                                    <td>{{ candidate.id }}</td>
+                                    <td>{{ candidate.lastname }}</td>
+                                    <td>{{ candidate.firstname }}</td>
+                                    <td>{{ candidate.phone }}</td>
+                                    <td>{{ candidate.email }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </section>
 </main>
