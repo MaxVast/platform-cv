@@ -11,6 +11,7 @@ Or using [Docker](https://www.docker.com/)
 ### Run the project
 - Enter into project directory
 - Run `docker-compose up -d` for local environment database
+- Run `head -c16 /dev/urandom > src/secret.key`
 - Run `cargo build`
 - Run `cargo run` for local environment
 - `http://127.0.0.1:8080/`

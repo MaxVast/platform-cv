@@ -1,82 +1,61 @@
 /* styles.css */
+@import url("https://use.typekit.net/fqc5nva.css");
 
 * {
-    .roboto-thin {
-        font-family: "Roboto", sans-serif;
-        font-weight: 100;
-        font-style: normal;
+    font-family: obviously, sans-serif;
+    .obviously-thin {
+        font-family: obviously, sans-serif;
+        font-weight: 200;
     }
 
-    .roboto-light {
-        font-family: "Roboto", sans-serif;
+    .obviously-light {
+        font-family: obviously, sans-serif;
         font-weight: 300;
-        font-style: normal;
     }
 
-    .roboto-regular {
-        font-family: "Roboto", sans-serif;
+    .obviously-regular {
+        font-family: obviously, sans-serif;
         font-weight: 400;
-        font-style: normal;
     }
 
-    .roboto-medium {
-        font-family: "Roboto", sans-serif;
+    .obviously-medium {
+        font-family: obviously, sans-serif;
         font-weight: 500;
-        font-style: normal;
     }
 
-    .roboto-bold {
-        font-family: "Roboto", sans-serif;
+    .obviously-bold {
+        font-family: obviously, sans-serif;
         font-weight: 700;
-        font-style: normal;
     }
 
-    .roboto-black {
-        font-family: "Roboto", sans-serif;
-        font-weight: 900;
-        font-style: normal;
-    }
-
-    .roboto-thin-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 100;
-        font-style: italic;
-    }
-
-    .roboto-light-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 300;
-        font-style: italic;
-    }
-
-    .roboto-regular-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 400;
-        font-style: italic;
-    }
-
-    .roboto-medium-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 500;
-        font-style: italic;
-    }
-
-    .roboto-bold-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 700;
-        font-style: italic;
-    }
-
-    .roboto-black-italic {
-        font-family: "Roboto", sans-serif;
-        font-weight: 900;
-        font-style: italic;
+    .obviously-black {
+        font-family: obviously, sans-serif;
+        font-weight: 800;
     }
 }
 body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
+}
+
+.signup-user-container {
+    margin-top: 15%;
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
 }
 
 header {
@@ -108,6 +87,7 @@ nav {
 .nav-links {
     list-style: none;
     display: flex;
+    cursor: pointer;
 }
 
 .nav-links li {
@@ -141,7 +121,6 @@ main {
 }
 
 .hero {
-    color: #fff;
     height: 50vh;
     display: flex;
     align-items: center;
@@ -213,7 +192,6 @@ footer {
 }
 
 footer .container {
-    background-color: #ffffff;
     color: #000000;
     margin: 0 auto;
     padding: 0.2rem;

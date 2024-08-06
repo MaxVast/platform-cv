@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="view-transition" content="same-origin">
+    <title>Bienvenue sur la plateforme CV</title>
+    <!-- Bootstrap CSS from CDN with local fallback -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/styles/styles.css">
+</head>
+<body>
+<main>
+    <section class="hero">
+        <div class="login-container">
+            <h2 class="text-center obviously-bold text-black">Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username_or_email">Username or Email</label>
+                    <input type="text" class="form-control" id="username_or_email" name="username_or_email" placeholder="Enter username or email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <div class="form-group">
+                    <p id="error-form" class="error text-red"></p>
+                </div>
+                <div class="form-group">
+                    <p id="success-form" class="success text-green"></p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+        </div>
+    </section>
+</main>
+<footer>
+    <div class="container">
+        <p class="roboto-regular">&copy; 2024 Platforme CV. Tous droits réservés.</p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS and dependencies from CDN with local fallback -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        document.getElementById('error-form').innerText = '';
+
+        const username_or_email = document.getElementById('username_or_email').value;
+        const password = document.getElementById('password').value;
+
+        const loginDTO = {
+            username_or_email: username_or_email,
+            password: password
+        };
+
+        try {
+            // Envoyer la requête POST au serveur
+            const response = await fetch('/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginDTO)
+            });
+
+            if (response.ok) {
+                if(response.redirected === true) {
+                    document.getElementById('success-form').innerText = 'Login successful';
+                    window.location.replace(response.url);
+                }
+            } else {
+                if(response.status === 401) {
+                    document.getElementById('error-form').innerText = await response.text();
+                }else{
+                    alert('Login failed: ' + await response.text());
+                }
+
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occurred during login. Please try again.');
+        }
+    });
+</script>
+</body>
+</html>
