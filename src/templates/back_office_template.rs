@@ -1,4 +1,4 @@
-use crate::models::company::Company;
+use crate::models::{company::Company, candidate::Candidate};
 use askama::Template;
 
 // Structure for context templates
@@ -14,6 +14,7 @@ pub struct HomepageBackOfficeTemplate<'a> {
     pub role: &'a String,
     #[allow(dead_code)]
     pub login_session: &'a String,
+    pub list_candidate: &'a Vec<Candidate>
 }
 
 #[derive(Template)]
