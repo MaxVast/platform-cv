@@ -3,8 +3,9 @@ use crate::{
     constants,
     models::{
         company::Company,
-        user::{LoginDTO, User, UserDTO},
+        user::{LoginDTO, User, UserDTO, RoleType},
         user_token::UserToken,
+        candidate::Candidate
     },
     templates::back_office_template::*,
     utils::token_utils,
@@ -58,22 +59,43 @@ pub async fn signup(
     }
 }
 
-pub async fn homepage(req: HttpRequest) -> HttpResponse {
+pub async fn homepage(req: HttpRequest, pool: Data<Pool>) -> HttpResponse {
     if let Some(token) = req.cookie("token") {
         if let Ok(login_info_token) = token_utils::get_data_token_to_login_info(token) {
-            let template = HomepageBackOfficeTemplate {
-                username: login_info_token.username,
-                company_name: login_info_token
-                    .company
-                    .clone()
-                    .unwrap_or_else(|| "".to_string()),
-                role: &login_info_token.role,
-                login_session: &login_info_token.login_session,
+            if login_info_token.role == RoleType::SuperAdmin.to_string() {
+                let list_candidate_data = Candidate::find_all(&mut pool.get().unwrap());
+                return HttpResponse::Ok().content_type("text/html").body(
+                    HomepageBackOfficeTemplate {
+                        username: login_info_token.username,
+                        company_name: login_info_token
+                            .company
+                            .clone()
+                            .unwrap_or_else(|| "".to_string()),
+                        role: &login_info_token.role,
+                        login_session: &login_info_token.login_session,
+                        list_candidate: &list_candidate_data.unwrap_or_else(|_| Vec::new())
+                    }
+                        .render()
+                        .unwrap()
+                );
+            } else {
+                let company = Company::find_entrprise_by_name(login_info_token.company.clone().expect("REASON").to_string().as_str(), &mut pool.get().unwrap());
+                let list_candidate_data = Candidate::find_by_company_id(company.unwrap().id, &mut pool.get().unwrap());
+                return HttpResponse::Ok().content_type("text/html").body(
+                    HomepageBackOfficeTemplate {
+                        username: login_info_token.username,
+                        company_name: login_info_token
+                            .company
+                            .clone()
+                            .unwrap_or_else(|| "".to_string()),
+                        role: &login_info_token.role,
+                        login_session: &login_info_token.login_session,
+                        list_candidate: &list_candidate_data.unwrap_or_else(|_| Vec::new())
+                    }
+                        .render()
+                        .unwrap()
+                );
             }
-            .render()
-            .unwrap();
-
-            return HttpResponse::Ok().content_type("text/html").body(template);
         }
         HttpResponse::InternalServerError().body(constants::MESSAGE_PROCESS_TOKEN_ERROR.to_string())
     } else {
